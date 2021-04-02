@@ -10,7 +10,7 @@ import { parseAction } from '../data/parse_action';
 import { parseEntity } from '../data/parse_entity';
 import { computeActionDisplay } from '../data/compute_action_display';
 import { formatWeekday } from '../data/date-time/format_weekday';
-import { formatTime, formatTime24 } from '../data/date-time/format_time';
+import { formatTime } from '../data/date-time/format_time';
 import { weekdayType } from '../data/date-time/weekday_type';
 import { weekdayToList } from '../data/date-time/weekday_to_list';
 import { stringToTime, parseRelativeTime } from '../data/date-time/time';
@@ -75,8 +75,8 @@ export class ScheduleEntityRow extends LitElement {
       entities.length == 1
         ? entities[0].name
         : entityDomains.length == 1
-        ? `${entities.length}x ${localize(`domains.${entityDomains[0]}`, this._hass.language) || entityDomains[0]}`
-        : `${entities.length}x entities`;
+          ? `${entities.length}x ${localize(`domains.${entityDomains[0]}`, this._hass.language) || entityDomains[0]}`
+          : `${entities.length}x entities`;
 
     const actionConfig = parseAction(nextEntry.actions[0], this._hass, this.config, true);
 
@@ -94,12 +94,12 @@ export class ScheduleEntityRow extends LitElement {
         case 'additional-tasks':
           return this._schedule.timeslots.length > 1
             ? '+' +
-                localize(
-                  'ui.panel.overview.additional_tasks',
-                  this._hass!.language,
-                  '{number}',
-                  String(this._schedule.timeslots.length - 1)
-                )
+            localize(
+              'ui.panel.overview.additional_tasks',
+              this._hass!.language,
+              '{number}',
+              String(this._schedule.timeslots.length - 1)
+            )
             : '';
         case 'time':
           return capitalize(this.computeTime(this._schedule.timeslots[this._schedule.next_entries[0]]));
@@ -137,25 +137,25 @@ export class ScheduleEntityRow extends LitElement {
       return typeof displayItem == 'string'
         ? replaceRelativeTime(computeDisplayItem(displayItem))
         : displayItem.map(e => {
-            const string = computeDisplayItem(e);
-            return string
-              ? html`
+          const string = computeDisplayItem(e);
+          return string
+            ? html`
                   ${replaceRelativeTime(string)}<br />
                 `
-              : '';
-          });
+            : '';
+        });
     };
 
     return html`
       <ha-icon icon="${PrettyPrintIcon(icon)}"></ha-icon>
       <div class="info">
         ${!this.config.display_options || !this.config.display_options.primary_info
-          ? renderDisplayItems('{entity}: {action}')
-          : renderDisplayItems(this.config.display_options.primary_info)}
+        ? renderDisplayItems('{entity}: {action}')
+        : renderDisplayItems(this.config.display_options.primary_info)}
         <div class="secondary">
           ${!this.config.display_options || !this.config.display_options.secondary_info
-            ? renderDisplayItems(['relative-time', 'additional-tasks'])
-            : renderDisplayItems(this.config.display_options.secondary_info)}
+        ? renderDisplayItems(['relative-time', 'additional-tasks'])
+        : renderDisplayItems(this.config.display_options.secondary_info)}
         </div>
       </div>
       <ha-switch
@@ -232,20 +232,20 @@ export class ScheduleEntityRow extends LitElement {
           res.event == ETimeEvent.Sunrise
             ? this._hass.localize('ui.panel.config.automation.editor.conditions.type.sun.sunrise').toLowerCase()
             : this._hass.localize('ui.panel.config.automation.editor.conditions.type.sun.sunset').toLowerCase();
-        if (Math.abs(stringToTime(res.offset)) < 5 * 60)
-          return localize('ui.time.at_sun_event', '{sunEvent}', eventString);
+        if (Math.abs(stringToTime(res.offset)) < 5 * 60) return localize('ui.components.time.at_sun_event', this.hass.language, '{sunEvent}', eventString);
 
         const signString =
           res.sign == '-'
             ? this._hass
-                .localize('ui.panel.config.automation.editor.conditions.type.sun.before')
-                .slice(0, -1)
-                .toLowerCase()
+              .localize('ui.panel.config.automation.editor.conditions.type.sun.before')
+              .slice(0, -1)
+              .toLowerCase()
             : this._hass
-                .localize('ui.panel.config.automation.editor.conditions.type.sun.after')
-                .slice(0, -1)
-                .toLowerCase();
-        const timeStr = formatTime24(stringToDate(res.offset));
+              .localize('ui.panel.config.automation.editor.conditions.type.sun.after')
+              .slice(0, -1)
+              .toLowerCase();
+
+        const timeStr = formatTime(stringToDate(res.offset), this.hass.language, { hour12: false });
 
         return `${timeStr} ${signString} ${eventString}`;
       } else {
